@@ -20,14 +20,18 @@ namespace RPG.Models
             int maxHealth,
             int healPower,
             int attackPower,
-            int speed,
+            int defense,
+            int criticalRate,
+            int agility,
             Weapon weapon
         ) : base(
             name: name,
             health: health,
             maxHealth: maxHealth,
             attackPower: attackPower,
-            speed: speed
+            defense: defense,
+            criticalRate: criticalRate,
+            agility: agility
         )
         {
             HealPower = healPower;

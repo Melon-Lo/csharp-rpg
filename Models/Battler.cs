@@ -3,10 +3,13 @@ namespace RPG.Models
     public class Battler
     {
         private int _health;
+        
         public string Name { get; set; }
         public int MaxHealth { get; set; }
         public int AttackPower { get; set; }
-        public int Speed { get; set; }
+        public int Defense { get; set; }
+        public int CriticalRate { get; set; }
+        public int Agility { get; set; }
         public float HealthPercentage => (float)Math.Round((float)_health / MaxHealth * 100, 1);
 
         public int Health
@@ -22,14 +25,18 @@ namespace RPG.Models
             int health,
             int maxHealth,
             int attackPower,
-            int speed
+            int defense,
+            int criticalRate,
+            int agility
         )
         {
             Name = name;
             MaxHealth = maxHealth;
             Health = health;
             AttackPower = attackPower;
-            Speed = speed;
+            Defense = defense;
+            CriticalRate = criticalRate;
+            Agility = agility;
         }
     }
 }

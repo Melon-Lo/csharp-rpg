@@ -5,17 +5,29 @@ namespace RPG.Logic
 {
     public class BattleSystem
     {
+        private Random _random = new Random();
+
         private void Attack(Battler actor, Battler target)
         {
-            target.Health -= actor.TotalAttackPower;
+            // 基本傷害
+            float baseDamage = actor.TotalAttackPower - target.Defense;
+
+            // 計算是否暴擊
+            bool isCritical = _random.NextDouble() < actor.CriticalRate / 100.0f;
+            float multiplier = isCritical ? 2.0f : 1.0f;
+            int finalDamage = (int)Math.Max(MathF.Round(baseDamage * multiplier), 1f);
+
+            target.Health -= finalDamage;
 
             string actorColor = (actor is Player) ? "blue" : "darkmagenta";
             string targetColor = (target is Player) ? "blue" : "darkmagenta";
+            string criticalColor = "yellow";
             string damageColor = "red";
 
             ColorConsole.WriteEmbeddedColorLine(
                 $"[{actorColor}]{actor.Name}[/{actorColor}]發動攻擊！" +
-                $"[{targetColor}]{target.Name}[/{targetColor}]受到 [{damageColor}]{actor.TotalAttackPower}[/{damageColor}] 點傷害。" +
+                $"{(isCritical ? $"[{criticalColor}]暴擊！[/{criticalColor}]" : "")}" +
+                $"[{targetColor}]{target.Name}[/{targetColor}]受到 [{damageColor}]{finalDamage}[/{damageColor}] 點傷害。" +
                 $"[{targetColor}]{target.Name}[/{targetColor}]當前血量: {target.Health} ({target.HealthPercentage}%)"
             );
         }
@@ -84,7 +96,7 @@ namespace RPG.Logic
             // 根據速度決定順序
             Battler first, second;
 
-            if (player.Speed >= Enemy.Speed)
+            if (player.Agility >= Enemy.Agility)
             {
                 first = player;
                 second = Enemy;

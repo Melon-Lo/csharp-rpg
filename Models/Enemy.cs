@@ -7,13 +7,17 @@ namespace RPG.Models
             int health,
             int maxHealth,
             int attackPower,
-            int speed
+            int defense,
+            int criticalRate,
+            int agility
         ) : base(
             name: name,
             health: health,
             maxHealth: maxHealth,
             attackPower: attackPower,
-            speed: speed
+            defense: defense,
+            criticalRate: criticalRate,
+            agility: agility
         )
         { }
     }
