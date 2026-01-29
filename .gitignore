@@ -1,0 +1,23 @@
+# --- .NET 核心編譯產出 ---
+[Bb]in/
+[Oo]bj/
+
+# --- Visual Studio & VS Code 個人設定 ---
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.doccache
+
+# --- 作業系統暫存檔 ---
+.DS_Store
+Thumbs.db
+
+# --- 測試與日誌 ---
+*.log
+TestResults/
+
+# --- 如果你有使用外部套件 ---
+project.lock.json
+project.fragment.lock.json
+artifacts/
