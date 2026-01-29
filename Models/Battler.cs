@@ -15,7 +15,15 @@ namespace RPG.Models
             set => _health = Math.Clamp(value, 0, MaxHealth);
         }
 
-        public Battler(string name, int health, int maxHealth, int attackPower, int speed)
+        public virtual int TotalAttackPower => AttackPower;
+
+        public Battler(
+            string name,
+            int health,
+            int maxHealth,
+            int attackPower,
+            int speed
+        )
         {
             Name = name;
             MaxHealth = maxHealth;

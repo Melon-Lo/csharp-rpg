@@ -10,10 +10,28 @@ namespace RPG.Models
             set => _healPower = value;
         }
 
-        public Player(string name, int health, int maxHealth, int healPower, int attackPower, int speed)
-            : base(name: name, health: health, maxHealth: maxHealth, attackPower: attackPower, speed: speed)
+        public Weapon Weapon { get; set; }
+
+        public override int TotalAttackPower => AttackPower + (Weapon?.AttackBonus ?? 0);
+
+        public Player(
+            string name,
+            int health,
+            int maxHealth,
+            int healPower,
+            int attackPower,
+            int speed,
+            Weapon weapon
+        ) : base(
+            name: name,
+            health: health,
+            maxHealth: maxHealth,
+            attackPower: attackPower,
+            speed: speed
+        )
         {
             HealPower = healPower;
+            Weapon = weapon;
         }
     }
 }

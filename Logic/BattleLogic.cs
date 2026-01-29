@@ -3,11 +3,11 @@ using DevKit.Utils;
 
 namespace RPG.Logic
 {
-    public class BattleLogic
+    public class BattleSystem
     {
         private void Attack(Battler actor, Battler target)
         {
-            target.Health -= actor.AttackPower;
+            target.Health -= actor.TotalAttackPower;
 
             string actorColor = (actor is Player) ? "blue" : "darkmagenta";
             string targetColor = (target is Player) ? "blue" : "darkmagenta";
@@ -15,7 +15,7 @@ namespace RPG.Logic
 
             ColorConsole.WriteEmbeddedColorLine(
                 $"[{actorColor}]{actor.Name}[/{actorColor}]發動攻擊！" +
-                $"[{targetColor}]{target.Name}[/{targetColor}]受到 [{damageColor}]{actor.AttackPower}[/{damageColor}] 點傷害。" +
+                $"[{targetColor}]{target.Name}[/{targetColor}]受到 [{damageColor}]{actor.TotalAttackPower}[/{damageColor}] 點傷害。" +
                 $"[{targetColor}]{target.Name}[/{targetColor}]當前血量: {target.Health} ({target.HealthPercentage}%)"
             );
         }
@@ -129,5 +129,4 @@ namespace RPG.Logic
             ColorConsole.WriteEmbeddedColorLine($"[{winnerColor}]{winner}[/{winnerColor}]獲勝！戰鬥結束。");
         }
     }
-
 }

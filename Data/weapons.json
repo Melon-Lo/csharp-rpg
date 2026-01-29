@@ -1,0 +1,17 @@
+[
+	{
+		"Id": 1,
+		"Name": "木劍",
+		"AttackBonus": 5
+	},
+	{
+		"Id": 2,
+		"Name": "鐵劍",
+		"AttackBonus": 15
+	},
+	{
+		"Id": 3,
+		"Name": "王者之劍",
+		"AttackBonus": 100
+	}
+]
