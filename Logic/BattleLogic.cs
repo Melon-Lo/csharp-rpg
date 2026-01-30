@@ -1,4 +1,5 @@
 using RPG.Models;
+using RPG.UI;
 using DevKit.Utils;
 
 namespace RPG.Logic
@@ -6,6 +7,8 @@ namespace RPG.Logic
     public class BattleSystem
     {
         private Random _random = new Random();
+
+        private HashSet<Battler> DeadUnitsThisBattle = new HashSet<Battler>();
 
         // 攻擊：接受 Battler
         private void Attack(Battler actor, Battler target)
@@ -20,7 +23,7 @@ namespace RPG.Logic
             string actorColor = (actor is Player) ? "blue" : "darkmagenta";
             string targetColor = (target is Player) ? "blue" : "darkmagenta";
 
-            ColorConsole.WriteEmbeddedColorLine(
+            BattleUI.Log(
                 $"[{actorColor}]{actor.Name}[/{actorColor}]發動攻擊！" +
                 $"{(isCritical ? "[yellow]暴擊！[/yellow]" : "")}" +
                 $"[{targetColor}]{target.Name}[/{targetColor}]受到 [red]{finalDamage}[/red] 點傷害。"
@@ -33,7 +36,7 @@ namespace RPG.Logic
             int costMana = 10;
             if (actor.Mana < costMana)
             {
-                ColorConsole.WriteEmbeddedColorLine($"[blue]{actor.Name}[/blue]法力不足！(需 {costMana} MP)");
+                BattleUI.Log($"[blue]{actor.Name}[/blue]法力不足！(需 {costMana} MP)");
                 // 注意：這裡不直接 call HandlePlayerChoice，交給迴圈控制
                 return;
             }
@@ -41,7 +44,7 @@ namespace RPG.Logic
             actor.Mana -= costMana;
             target.Health += actor.HealPower;
 
-            ColorConsole.WriteEmbeddedColorLine(
+            BattleUI.Log(
                 $"[blue]{actor.Name}[/blue]對[blue]{target.Name}[/blue]發動治療！" +
                 $"回復了 [green]{actor.HealPower}[/green] 點血量。"
             );
@@ -54,17 +57,20 @@ namespace RPG.Logic
             if (actor.Health <= 0) return;
 
             // --- 顯示狀態面板 (Player 永遠在上方) ---
-            ColorConsole.WriteEmbeddedColorLine($"\n--- {(actor is Player ? "[blue]" : "[darkmagenta]")}{actor.Name}[/{(actor is Player ? "blue" : "darkmagenta")}] 的回合 ---");
+            BattleUI.Log("---------------------------", false);
 
             foreach (var p in players)
             {
-                ColorConsole.WriteEmbeddedColorLine($"[blue]{p.Name}[/blue]: HP {p.Health}/{p.MaxHealth} | MP {p.Mana}/{p.MaxMana} ({p.ManaPercentage}%)");
+                BattleUI.Log($"[blue]{p.Name}[/blue]: HP {p.Health}/{p.MaxHealth} | MP {p.Mana}/{p.MaxMana} ({p.ManaPercentage}%)", false);
             }
             foreach (var e in enemies)
             {
-                ColorConsole.WriteEmbeddedColorLine($"[darkmagenta]{e.Name}[/darkmagenta]: HP {e.Health}/{e.MaxHealth} ({e.HealthPercentage}%)");
+                BattleUI.Log($"[darkmagenta]{e.Name}[/darkmagenta]: HP {e.Health}/{e.MaxHealth} ({e.HealthPercentage}%)", false);
             }
-            Console.WriteLine("------------------");
+
+            BattleUI.Log("---------------------------", false);
+
+            BattleUI.Log($"\n--- {(actor is Player ? "[blue]" : "[darkmagenta]")}{actor.Name}[/{(actor is Player ? "blue" : "darkmagenta")}] 的回合 ---", false);
 
             if (actor is Player player)
             {
@@ -84,6 +90,12 @@ namespace RPG.Logic
                     Attack(actor, target);
                 }
             }
+
+            // 掃描所有戰鬥參與者是否死亡
+            CheckAllDeaths(players, enemies);
+
+            // 停頓，進入下一動
+            BattleUI.Wait();
         }
 
         private void HandlePlayerChoice(Player player, List<Battler> enemies, List<Battler> allies)
@@ -91,7 +103,7 @@ namespace RPG.Logic
             bool acted = false;
             while (!acted)
             {
-                Console.WriteLine("請選擇行動: 1. 攻擊 / 2. 治療");
+                BattleUI.Log("請選擇行動: 1. 攻擊 / 2. 治療", false);
                 string choice = Console.ReadLine() ?? "";
 
                 if (choice == "1")
@@ -104,11 +116,15 @@ namespace RPG.Logic
                     int costMana = 10;
                     if (player.Mana < costMana)
                     {
-                        Console.WriteLine($"法力不足，請重新選擇行動。 (目前法力: {player.Mana} / 所需法力: {costMana})");
+                        BattleUI.Log($"法力不足，請重新選擇行動。 (目前法力: {player.Mana} / 所需法力: {costMana})", false);
                         continue;
                     }
                     var target = SelectTarget(allies, "治療");
                     if (target != null && target is Player targetPlayer) { Heal(player, targetPlayer); acted = true; }
+                }
+                else
+                {
+                    BattleUI.Log("無效的選擇，請重新選擇行動。", false);
                 }
             }
         }
@@ -116,7 +132,7 @@ namespace RPG.Logic
         // 開啟戰鬥
         public void StartBattle(Player[] players, Enemy[] enemies)
         {
-            Console.WriteLine("戰鬥開始！");
+            BattleUI.Log("戰鬥開始！");
 
             // 建立行動順序清單 (按敏捷排序)
             var turnOrder = new List<Battler>();
@@ -137,14 +153,13 @@ namespace RPG.Logic
                     if (actor.Health <= 0) continue;
 
                     ExecuteTurn(actor, players, enemies);
-                    Thread.Sleep(1000);
                 }
             }
 
             if (players.Any(p => p.Health > 0))
-                ColorConsole.WriteEmbeddedColorLine("[blue]獲勝！[/blue]");
+                BattleUI.Log("[blue]戰鬥勝利！[/blue]");
             else
-                ColorConsole.WriteEmbeddedColorLine("[darkmagenta]全軍覆沒……[/darkmagenta]");
+                BattleUI.Log("[darkmagenta]全軍覆沒……[/darkmagenta]");
         }
 
         private Battler? SelectTarget(List<Battler> targets, string actionName)
@@ -154,14 +169,36 @@ namespace RPG.Logic
 
             while (true)
             {
-                Console.WriteLine($"\n請選擇{actionName}對象 (編號, 0 返回):");
+                BattleUI.Log($"\n請選擇{actionName}對象 (0. 返回):", false);
                 for (int i = 0; i < targets.Count; i++)
-                    Console.WriteLine($"{i + 1}. {targets[i].Name} (HP: {targets[i].Health})");
-
+                    BattleUI.Log($"{i + 1}. {targets[i].Name} (HP: {targets[i].Health} / {targets[i].MaxHealth})", false);
                 if (int.TryParse(Console.ReadLine(), out int index))
                 {
                     if (index == 0) return null;
                     if (index > 0 && index <= targets.Count) return targets[index - 1];
+                }
+            }
+        }
+
+        private void CheckAllDeaths(Player[] players, Enemy[] enemies)
+        {
+            var allParticipants = players.Cast<Battler>().Concat(enemies);
+
+            foreach (var b in allParticipants)
+            {
+                // 偵測死亡：血量為 0 且還沒被記錄
+                if (b.Health <= 0 && !DeadUnitsThisBattle.Contains(b))
+                {
+                    string color = (b is Player) ? "blue" : "darkmagenta";
+                    BattleUI.Log($"☠️ [{color}]{b.Name}[/{color}]倒下了！", wait: false);
+                    DeadUnitsThisBattle.Add(b);
+                }
+
+                // 偵測復活：血量大於 0 且竟然在死亡名單內 (我方成員有復活的可能)
+                // 這樣即便不改 Heal 方法，這裡也會自動幫你把標記洗掉
+                else if (b.Health > 0 && DeadUnitsThisBattle.Contains(b))
+                {
+                    DeadUnitsThisBattle.Remove(b);
                 }
             }
         }
