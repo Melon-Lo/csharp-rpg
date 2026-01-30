@@ -14,7 +14,7 @@ namespace RPG.Data
                 string jsonString = File.ReadAllText("Data/weapons.json");
                 _weapons = JsonSerializer.Deserialize<List<Weapon>>(jsonString) ?? new List<Weapon>();
 
-                Console.WriteLine($"成功載入 {_weapons.Count} 把武器");
+                // Console.WriteLine($"成功載入 {_weapons.Count} 把武器");
             }
             catch (Exception ex)
             {

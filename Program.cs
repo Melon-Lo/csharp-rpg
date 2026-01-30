@@ -10,8 +10,10 @@ class Program
 
         Player player = new Player(
             name: "小明",
-            health: 100,
             maxHealth: 100,
+            health: 100,
+            maxMana: 10,
+            mana: 10,
             attackPower: 20,
             defense: 10,
             healPower: 100,
@@ -20,10 +22,20 @@ class Program
             weapon: WeaponDatabase.GetById(1)
         );
 
-        Enemy enemy = new Enemy(
-            name: "史萊姆",
-            health: 50,
+        Enemy enemy1 = new Enemy(
+            name: "小地瓜",
             maxHealth: 50,
+            health: 50,
+            attackPower: 25,
+            defense: 5,
+            criticalRate: 50,
+            agility: 1
+        );
+
+        Enemy enemy2 = new Enemy(
+            name: "小南瓜",
+            maxHealth: 50,
+            health: 50,
             attackPower: 25,
             defense: 5,
             criticalRate: 50,
@@ -31,6 +43,6 @@ class Program
         );
 
         BattleSystem game = new BattleSystem();
-        game.StartBattle(player, enemy);
+        game.StartBattle(new Player[] { player }, new Enemy[] { enemy1, enemy2 });
     }
 }

@@ -3,7 +3,7 @@ namespace RPG.Models
     public class Battler
     {
         private int _health;
-        
+
         public string Name { get; set; }
         public int MaxHealth { get; set; }
         public int AttackPower { get; set; }
