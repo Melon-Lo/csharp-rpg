@@ -61,11 +61,11 @@ namespace RPG.Logic
 
             foreach (var p in players)
             {
-                BattleUI.Log($"[blue]{p.Name}[/blue]: HP {p.Health}/{p.MaxHealth} | MP {p.Mana}/{p.MaxMana} ({p.ManaPercentage}%)", false);
+                BattleUI.Log($"[blue]{p.Name}[/blue]: HP {p.Health}/{p.MaxHealth} | MP {p.Mana}/{p.MaxMana}", false);
             }
             foreach (var e in enemies)
             {
-                BattleUI.Log($"[darkmagenta]{e.Name}[/darkmagenta]: HP {e.Health}/{e.MaxHealth} ({e.HealthPercentage}%)", false);
+                BattleUI.Log($"[darkmagenta]{e.Name}[/darkmagenta]: HP {e.Health}/{e.MaxHealth}", false);
             }
 
             BattleUI.Log("---------------------------", false);

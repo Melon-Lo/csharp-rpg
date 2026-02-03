@@ -17,9 +17,9 @@ class Program
             attackPower: 20,
             defense: 10,
             healPower: 100,
-            criticalRate: 100,
+            criticalRate: 20,
             agility: 2,
-            weapon: WeaponDatabase.GetById(1)
+            weapon: WeaponDatabase.GetById(3)
         );
 
         Player player2 = new Player(
@@ -31,7 +31,7 @@ class Program
             attackPower: 20,
             defense: 10,
             healPower: 100,
-            criticalRate: 100,
+            criticalRate: 50,
             agility: 2,
             weapon: WeaponDatabase.GetById(1)
         );
